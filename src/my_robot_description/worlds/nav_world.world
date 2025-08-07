@@ -28,6 +28,9 @@
         filename="ignition-gazebo-contact-system"
         name="ignition::gazebo::systems::Contact">
     </plugin>
+    <plugin filename="gz-sim-imu-system"
+            name="gz::sim::systems::Imu">
+    </plugin>
 
     <!-- 基本光源 -->
     <light name="sun" type="directional">
