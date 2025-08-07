@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- 颜色 -->
+  <xacro:property name="color_red" value="1 0 0 1"/>
+  <xacro:property name="color_green" value="0 1 0 1"/>
+  <xacro:property name="color_blue" value="0 0 1 1"/>
+
+  <!-- 底盘尺寸 -->
+  <xacro:property name="base_size" value="0.4 0.3 0.1"/>
+  <xacro:property name="wheel_radius" value="0.1"/>
+  <xacro:property name="wheel_width" value="0.02"/>
+</robot>

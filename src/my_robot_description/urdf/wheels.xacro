@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:macro name="mul_wheel" params="name parent xyz">
+
+    <xacro:property name="wheel_mass" value="0.1"/>
+
+    <link name="${name}_link">
+      <visual>
+        <geometry>
+          <sphere radius="${wheel_radius}"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <material name="gray">
+          <color rgba="0.4 0.4 0.4 1"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <sphere radius="${wheel_radius}"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${wheel_mass}"/>
+        <inertia ixx="1e-5" ixy="0.0" ixz="0.0"
+                iyy="1e-5" iyz="0.0"
+                izz="1e-5"/>
+      </inertial>
+    </link>
+
+    <joint name="${name}_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${name}_link"/>
+      <origin xyz="${xyz}" rpy="0 0 0"/>
+    </joint>
+
+    <gazebo reference="${name}_link">
+      <mu1>0.01</mu1>
+      <mu2>0.01</mu2>
+      <material>Gazebo/Grey</material>
+    </gazebo>
+
+  </xacro:macro>
+
+
+  <xacro:macro name="wheel" params="name parent xyz">
+    <xacro:property name="wheel_mass" value="0.3"/>
+    <xacro:property name="inertia_ixx" value="${0.5 * wheel_mass * wheel_radius * wheel_radius}"/>
+    <xacro:property name="inertia_iyy" value="${0.5 * wheel_mass * wheel_radius * wheel_radius}"/>
+    <xacro:property name="inertia_izz" value="${0.5 * wheel_mass * wheel_radius * wheel_radius}"/>
+
+    <link name="${name}_link">
+      <visual>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+        <material name="black">
+          <color rgba="0 0 0 1"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+        <material name="black">
+          <color rgba="0 0 0 1"/>
+        </material>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${wheel_mass}"/>
+        <inertia
+          ixx="${inertia_ixx}" ixy="0.0" ixz="0.0"
+          iyy="${inertia_iyy}" iyz="0.0"
+          izz="${inertia_izz}"/>
+      </inertial>
+    </link>
+
+    <joint name="${name}_joint" type="continuous">
+      <parent link="${parent}"/>
+      <child link="${name}_link"/>
+      <origin xyz="${xyz}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+    
+    <gazebo reference="${name}_link">
+      <mu1>20.0</mu1>
+      <mu2>20.0</mu2>
+      <material>Gazebo/Black</material>
+    </gazebo>
+  </xacro:macro>
+
+</robot>

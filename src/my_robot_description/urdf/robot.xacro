@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="my_wheeled_robot">
+
+  <!-- Include modules -->
+  <xacro:include filename="macros.xacro"/>
+  <xacro:include filename="base.xacro"/>
+  <xacro:include filename="wheels.xacro"/>
+  <xacro:include filename="sensors.xacro"/>
+  <xacro:include filename="plugins/gazebo_control_plugin.xacro"/>
+  <xacro:include filename="plugins/gazebo_sensor_plugin.xacro"/>
+
+
+  <!-- Define properties (used as macro arguments) -->
+  <xacro:property name="base_size" value="0.4 0.4 0.1"/>
+
+  <!-- Call base macro with required params -->
+  <xacro:base_link base_size="${base_size}"/>
+
+  <!-- Wheels -->
+  <xacro:wheel name="left_wheel" parent="base_link" xyz="-0.1 0.2 -0.05"/>
+  <xacro:wheel name="right_wheel" parent="base_link" xyz="-0.1 -0.2 -0.05"/>
+  <xacro:mul_wheel name="mul_wheel" parent="base_link" xyz="0.1 0.0 -0.05"/>
+
+  <!-- Sensor -->
+  <xacro:lidar_sensor name="laser" parent="base_link" xyz="0 0 0.1" rpy="0 0 0"/>
+
+
+  <!-- Gazebo diff drive plugin -->
+  <xacro:gazebo_control_plugin
+    left_joint="left_wheel_joint"
+    right_joint="right_wheel_joint"
+    wheel_separation="0.42"
+    wheel_radius="0.1"
+    max_accel="0.033"
+    cmd_vel_topic="cmd_vel"
+    odom_topic="odom"
+    odom_frame="odom"
+    base_frame="base_footprint"
+    odom_pub_freq="30"/>
+
+</robot>
