@@ -8,7 +8,7 @@ from ament_index_python.packages import get_package_share_directory
 import os
 
 def generate_launch_description():
-    pkg_path = get_package_share_directory('my_robot_description')
+    pkg_path = get_package_share_directory('robot_pkg')
     default_model_path = os.path.join(pkg_path, 'urdf', 'robot.xacro')
     rviz_config_path = os.path.join(pkg_path, 'config', 'display_config.rviz')
 

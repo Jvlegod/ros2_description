@@ -7,7 +7,7 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
     config_path = os.path.join(
-        get_package_share_directory('my_robot_description'),
+        get_package_share_directory('robot_pkg'),
         'config',
         'bridge_config.yaml'
     )

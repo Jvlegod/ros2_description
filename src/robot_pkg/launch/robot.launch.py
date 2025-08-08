@@ -1,7 +1,8 @@
 import os
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, ExecuteProcess, TimerAction, GroupAction, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, ExecuteProcess, TimerAction, GroupAction, IncludeLaunchDescription, RegisterEventHandler
 from launch.substitutions import LaunchConfiguration, Command
+from launch.event_handlers import OnProcessExit
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 from launch.conditions import IfCondition
@@ -9,7 +10,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
-    pkg_path = get_package_share_directory('my_robot_description')
+    pkg_path = get_package_share_directory('robot_pkg')
     default_model_path = os.path.join(pkg_path, 'urdf', 'robot.xacro')
 
     default_world_path = os.path.join(pkg_path, 'worlds', 'nav_world.world')
@@ -53,20 +54,20 @@ def generate_launch_description():
     )
 
     # 3. start ros_gz_sim create spawn robot
+    spawn_robot_node = Node(
+        package='ros_gz_sim',
+        executable='create',
+        arguments=[
+            '-name', 'my_robot',
+            '-topic', 'robot_description',
+            '-x', '0', '-y', '0', '-z', '0.3'
+        ],
+        output='screen'
+    )
+
     spawn_robot = TimerAction(
         period=2.0,
-        actions=[
-            Node(
-                package='ros_gz_sim',
-                executable='create',
-                arguments=[
-                    '-name', 'my_robot',
-                    '-topic', 'robot_description',
-                    '-x', '0', '-y', '0', '-z', '0.3'
-                ],
-                output='screen'
-            )
-        ]
+        actions=[spawn_robot_node]
     )
 
     # 4. start ros_gz_bridge
@@ -87,6 +88,37 @@ def generate_launch_description():
         ]
     )
 
+    load_joint_state_controller_spawner = ExecuteProcess(
+        cmd=[
+            'ros2', 'control', 'load_controller', 'joint_state_broadcaster',
+            '--set-state', 'active',
+        ],
+        output='screen'
+    )
+
+    load_effort_controller_spawner = ExecuteProcess(
+        cmd=[
+            'ros2', 'control', 'load_controller', 'effort_controller',
+            '--set-state', 'active',
+        ],
+        output='screen'
+    )
+
+    # 6. Register event: after spawn, run controller_spawner
+    register_load_joint_state_spawner = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=spawn_robot_node,
+            on_exit=[load_joint_state_controller_spawner]
+        )
+    )
+
+    register_load_effort_spawner = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=load_joint_state_controller_spawner,
+            on_exit=[load_effort_controller_spawner]
+        )
+    )
+
     return LaunchDescription([
         declare_model,
         declare_rviz,
@@ -95,4 +127,6 @@ def generate_launch_description():
         spawn_robot,
         bridge_launch,
         rviz_node,
+        register_load_joint_state_spawner,
+        register_load_effort_spawner
     ])
