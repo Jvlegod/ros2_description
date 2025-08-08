@@ -20,7 +20,6 @@
         <!-- 运动学参数 -->
         <wheel_separation>${wheel_separation}</wheel_separation>
         <wheel_radius>${wheel_radius}</wheel_radius>
-        <max_linear_acceleration>${max_accel}</max_linear_acceleration>
 
         <!-- ROS 接口（通过 ros_gz_bridge 使用） -->
         <topic>${cmd_vel_topic}</topic>
