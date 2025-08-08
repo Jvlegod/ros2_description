@@ -96,9 +96,17 @@ def generate_launch_description():
         output='screen'
     )
 
-    load_effort_controller_spawner = ExecuteProcess(
+    # load_effort_controller_spawner = ExecuteProcess(
+    #     cmd=[
+    #         'ros2', 'control', 'load_controller', 'effort_controller',
+    #         '--set-state', 'active',
+    #     ],
+    #     output='screen'
+    # )
+
+    load_diff_drive_controller_spawner = ExecuteProcess(
         cmd=[
-            'ros2', 'control', 'load_controller', 'effort_controller',
+            'ros2', 'control', 'load_controller', 'diff_drive_controller',
             '--set-state', 'active',
         ],
         output='screen'
@@ -112,10 +120,17 @@ def generate_launch_description():
         )
     )
 
-    register_load_effort_spawner = RegisterEventHandler(
+    # register_load_effort_spawner = RegisterEventHandler(
+    #     event_handler=OnProcessExit(
+    #         target_action=load_joint_state_controller_spawner,
+    #         on_exit=[load_effort_controller_spawner]
+    #     )
+    # )
+
+    register_load_diff_drive_spawner = RegisterEventHandler(
         event_handler=OnProcessExit(
             target_action=load_joint_state_controller_spawner,
-            on_exit=[load_effort_controller_spawner]
+            on_exit=[load_diff_drive_controller_spawner]
         )
     )
 
@@ -128,5 +143,5 @@ def generate_launch_description():
         bridge_launch,
         rviz_node,
         register_load_joint_state_spawner,
-        register_load_effort_spawner
+        register_load_diff_drive_spawner
     ])
