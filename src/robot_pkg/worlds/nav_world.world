@@ -1,0 +1,207 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <world name="nav_world">
+
+    <physics name='1ms' type='ignored'>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+    </physics>
+
+    <plugin
+        filename="ignition-gazebo-physics-system"
+        name="ignition::gazebo::systems::Physics">
+    </plugin>
+    <plugin
+        filename="ignition-gazebo-user-commands-system"
+        name="ignition::gazebo::systems::UserCommands">
+    </plugin>
+    <plugin
+        filename="ignition-gazebo-scene-broadcaster-system"
+        name="ignition::gazebo::systems::SceneBroadcaster">
+    </plugin>
+    <plugin
+        filename="ignition-gazebo-sensors-system"
+        name="ignition::gazebo::systems::Sensors">
+        <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin 
+        filename="ignition-gazebo-contact-system"
+        name="ignition::gazebo::systems::Contact">
+    </plugin>
+    <plugin filename="gz-sim-imu-system"
+            name="gz::sim::systems::Imu">
+    </plugin>
+
+    <!-- 基本光源 -->
+    <light name="sun" type="directional">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>1 1 1 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>-0.5 0.5 -1</direction>
+    </light>
+
+    <!-- 地面（自定义 plane，非 Fuel） -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="ground_link">
+        <collision name="ground_collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>20 20</size>
+            </plane>
+          </geometry>
+        </collision>
+        <visual name="ground_visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>20 20</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.5 0.5 0.5 1</ambient>
+            <diffuse>0.7 0.7 0.7 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 多房间布局（外墙 12x10，墙厚0.2，高1.5） -->
+    <model name="complex_rooms_v3">
+      <static>true</static>
+
+      <!-- 外墙 -->
+      <link name="outer_east">
+        <pose>6 0 0.75 0 0 0</pose>
+        <collision name="c"><geometry><box><size>0.2 10 1.5</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.2 10 1.5</size></box></geometry></visual>
+      </link>
+      <link name="outer_west">
+        <pose>-6 0 0.75 0 0 0</pose>
+        <collision name="c"><geometry><box><size>0.2 10 1.5</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.2 10 1.5</size></box></geometry></visual>
+      </link>
+      <link name="outer_north">
+        <pose>0 5 0.75 0 0 0</pose>
+        <collision name="c"><geometry><box><size>12 0.2 1.5</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>12 0.2 1.5</size></box></geometry></visual>
+      </link>
+      <link name="outer_south">
+        <pose>0 -5 0.75 0 0 0</pose>
+        <collision name="c"><geometry><box><size>12 0.2 1.5</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>12 0.2 1.5</size></box></geometry></visual>
+      </link>
+
+      <!-- 横墙（y=2，留 2m 门洞，形成北侧大房） -->
+      <link name="h_y2_left">
+        <pose>-3.5 2 0.75 0 0 0</pose>
+        <collision name="c"><geometry><box><size>5 0.2 1.5</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>5 0.2 1.5</size></box></geometry></visual>
+      </link>
+      <link name="h_y2_right">
+        <pose>3.5 2 0.75 0 0 0</pose>
+        <collision name="c"><geometry><box><size>5 0.2 1.5</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>5 0.2 1.5</size></box></geometry></visual>
+      </link>
+
+      <!-- 右侧纵墙（x=2.5），把南侧分成东/西两区；在 y∈[-2.5,-1.5] 留 1m 门 -->
+      <link name="v_x2p5_low">
+        <pose>2.5 -3.25 0.75 0 0 0</pose>
+        <collision name="c"><geometry><box><size>0.2 1.5 1.5</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.2 1.5 1.5</size></box></geometry></visual>
+      </link>
+      <link name="v_x2p5_high">
+        <pose>2.5 -0.75 0.75 0 0 0</pose>
+        <collision name="c"><geometry><box><size>0.2 3.5 1.5</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.2 3.5 1.5</size></box></geometry></visual>
+      </link>
+
+      <!-- 左侧纵墙（x=-2.5），把南侧西区与中心走廊隔开 -->
+      <link name="v_x-2p5_full">
+        <pose>-2.5 -1.5 0.75 0 0 0</pose>
+        <collision name="c"><geometry><box><size>0.2 7 1.5</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.2 7 1.5</size></box></geometry></visual>
+      </link>
+
+      <!-- 西南角小房间（约 2.6x2.6），门开在北边（y=-2.2）留 0.8m 缝 -->
+      <!-- 小房北墙分两段留门 -->
+      <link name="h_sw_top_left">
+        <pose>-5.1 -2.2 0.75 0 0 0</pose>
+        <collision name="c"><geometry><box><size>1.0 0.2 1.5</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>1.0 0.2 1.5</size></box></geometry></visual>
+      </link>
+      <link name="h_sw_top_right">
+        <pose>-3.7 -2.2 0.75 0 0 0</pose>
+        <collision name="c"><geometry><box><size>1.0 0.2 1.5</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>1.0 0.2 1.5</size></box></geometry></visual>
+      </link>
+      <!-- 小房西墙（靠外墙，略内缩，避免与外墙重合） -->
+      <link name="v_sw_west">
+        <pose>-5.9 -3.4 0.75 0 0 0</pose>
+        <collision name="c"><geometry><box><size>0.2 2.4 1.5</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.2 2.4 1.5</size></box></geometry></visual>
+      </link>
+      <!-- 小房东墙 -->
+      <link name="v_sw_east">
+        <pose>-3.0 -3.4 0.75 0 0 0</pose>
+        <collision name="c"><geometry><box><size>0.2 2.4 1.5</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.2 2.4 1.5</size></box></geometry></visual>
+      </link>
+      <!-- 小房南墙 -->
+      <link name="h_sw_south">
+        <pose>-4.45 -4.6 0.75 0 0 0</pose>
+        <collision name="c"><geometry><box><size>2.9 0.2 1.5</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>2.9 0.2 1.5</size></box></geometry></visual>
+      </link>
+
+      <!-- 北房再加一堵纵墙（x=0），在 y∈[2.0,5.0] 中间，分成左右两间大房，门开在 y=3.2 处留 1m -->
+      <link name="v_mid_north_top">
+        <pose>0 4.1 0.75 0 0 0</pose>
+        <collision name="c"><geometry><box><size>0.2 1.6 1.5</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.2 1.6 1.5</size></box></geometry></visual>
+      </link>
+      <link name="v_mid_north_bot">
+        <pose>0 2.9 0.75 0 0 0</pose>
+        <collision name="c"><geometry><box><size>0.2 1.6 1.5</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.2 1.6 1.5</size></box></geometry></visual>
+      </link>
+    </model>
+
+
+    <!-- 障碍 -->
+    <model name="box_obstacle">
+      <pose>1 1 0.25 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box><size>0.5 0.5 0.5</size></box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box><size>0.5 0.5 0.5</size></box>
+          </geometry>
+          <material>
+            <ambient>1 0.3 0.3 1</ambient>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 机器人出生点 -->
+    <model name="robot_spawn">
+      <pose>0 0 0.01 0 0 0</pose>
+      <static>true</static>
+      <link name="spawn_link">
+        <visual name="dummy">
+          <geometry><box><size>0.001 0.001 0.001</size></box></geometry>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>
+

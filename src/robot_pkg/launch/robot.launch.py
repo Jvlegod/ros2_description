@@ -9,7 +9,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
-    pkg_path = get_package_share_directory('my_robot_description')
+    pkg_path = get_package_share_directory('robot_pkg')
     default_model_path = os.path.join(pkg_path, 'urdf', 'robot.xacro')
 
     default_world_path = os.path.join(pkg_path, 'worlds', 'nav_world.world')
@@ -19,6 +19,11 @@ def generate_launch_description():
     bridge_launch_path = os.path.join(pkg_path, 'launch', 'bridge.launch.py')
 
     # Launch arguments
+    declare_use_sim = DeclareLaunchArgument(
+        'use_sim_time', default_value='true',
+        description='Use simulation time (/clock) if true'
+    )
+
     declare_model = DeclareLaunchArgument(
         'model', default_value=default_model_path,
         description='Path to XACRO model'
@@ -29,6 +34,7 @@ def generate_launch_description():
     )
 
     # Substitutions
+    use_sim_time = LaunchConfiguration('use_sim_time')
     model = LaunchConfiguration('model')
     rviz = LaunchConfiguration('rviz')
 
@@ -48,7 +54,10 @@ def generate_launch_description():
     robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
-        parameters=[{'robot_description': robot_description}],
+        parameters=[{
+            'robot_description': robot_description,
+            'use_sim_time': use_sim_time
+        }],
         output='screen'
     )
 
@@ -82,12 +91,14 @@ def generate_launch_description():
                 package='rviz2',
                 executable='rviz2',
                 arguments=['-d', rviz_config],
+                parameters=[{'use_sim_time': use_sim_time}],
                 output='screen'
             )
         ]
     )
 
     return LaunchDescription([
+        declare_use_sim,
         declare_model,
         declare_rviz,
         robot_state_publisher,
