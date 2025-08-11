@@ -13,7 +13,7 @@ def generate_launch_description():
         nav2_bringup_dir, 'rviz', 'nav2_default_view.rviz')
     
     use_sim_time = launch.substitutions.LaunchConfiguration(
-        'use_sim_time', default='true')
+        'use_sim_time', default='False')
     map_yaml_path = launch.substitutions.LaunchConfiguration(
         'map', default=os.path.join(robot_navigation2_dir, 'maps', 'room.yaml'))
     nav2_param_path = launch.substitutions.LaunchConfiguration(
