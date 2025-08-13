@@ -26,12 +26,12 @@ def generate_launch_description():
         output='screen'
     )
 
-    ros_serial2wifi =  Node(
-        package='ros_serial2wifi',
-        executable='tcp_server',
-        parameters=[{'serial_port': '/tmp/tty_laser'}],
-        output='screen'
-    )
+    # ros_serial2wifi =  Node(
+    #     package='ros_serial2wifi',
+    #     executable='tcp_server',
+    #     parameters=[{'serial_port': '/tmp/tty_laser'}],
+    #     output='screen'
+    # )
 
     ydlidar = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -42,8 +42,8 @@ def generate_launch_description():
 
     return LaunchDescription([
         microros_agent,
-        ros_serial2wifi,
         odom2tf,
+        # ros_serial2wifi,
         ydlidar_delay,
         urdf2tf
     ])
