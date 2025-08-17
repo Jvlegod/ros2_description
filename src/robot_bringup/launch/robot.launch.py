@@ -15,7 +15,7 @@ def generate_launch_description():
 
     # Launch arguments
     declare_use_sim = DeclareLaunchArgument(
-        'use_sim_time', default_value='false',
+        'use_sim_time', default_value='False',
         description='Use simulation time (/clock) if true'
     )
 
@@ -49,10 +49,11 @@ def generate_launch_description():
         output='screen'
     )
 
-    joint_state_publisher = Node(
-        package='joint_state_publisher',
-        executable='joint_state_publisher',
-    )
+    # joint_state_publisher = Node(
+    #     package='joint_state_publisher',
+    #     executable='joint_state_publisher',
+    #     parameters=[{'use_sim_time': use_sim_time}],
+    # )
 
     rviz_node = GroupAction(
         condition=IfCondition(rviz),
@@ -72,6 +73,6 @@ def generate_launch_description():
         declare_model,
         declare_rviz,
         robot_state_publisher,
-        joint_state_publisher,
+        # joint_state_publisher,
         rviz_node,
     ])

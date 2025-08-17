@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "ranges": "cpp",
-        "optional": "cpp"
+        "optional": "cpp",
+        "string": "cpp"
     }
 }
