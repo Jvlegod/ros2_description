@@ -1,3 +1,6 @@
 [submodule "src/hls_lfcd_lds_driver"]
 	path = src/hls_lfcd_lds_driver
 	url = https://github.com/ROBOTIS-GIT/hls_lfcd_lds_driver
+[submodule "src/micro-ROS-Agent"]
+	path = src/micro-ROS-Agent
+	url = https://github.com/micro-ROS/micro-ROS-Agent
